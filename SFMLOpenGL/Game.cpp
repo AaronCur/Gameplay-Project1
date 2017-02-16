@@ -9,7 +9,7 @@ GLuint	vsid,		// Vertex Shader ID
 		vib,		// Vertex Index Buffer
 		to,			// Texture ID 1 to 32
 		positionID,	// Position ID
-		colorID,	// Color ID
+		colorID,	// Color ID-
 		textureID,	// Texture ID
 		uvID,		// UV ID
 		mvpID;		// Model View Projection ID
@@ -17,10 +17,10 @@ GLuint	vsid,		// Vertex Shader ID
 //const string filename = "coordinates.tga";
 //const string filename = "cube.tga";
 //const string filename = "grid.tga";
-const string filename = "grid_wip.tga";
+//const string filename = "grid_wip.tga";
 //const string filename = "minecraft.tga";
 //const string filename = "texture.tga";
-//const string filename = "texture_2.tga";
+const string filename = "texture_2.tga";
 //const string filename = "uvtemplate.tga";
 
 
@@ -69,30 +69,50 @@ void Game::run()
 				isRunning = false;
 			}
 
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			{
-				// Set Model Rotation
-				model = rotate(model, 0.01f, glm::vec3(0, 1, 0)); // Rotate
-			}
-
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-			{
-				// Set Model Rotation
-				model = rotate(model, -0.01f, glm::vec3(0, 1, 0)); // Rotate
-			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			{
 				// Set Model Rotation
-				model = rotate(model, -0.01f, glm::vec3(1, 0, 0)); // Rotate
+				model = rotate(model, -0.05f, glm::vec3(1, 0, 0)); // Rotate
+				
 			}
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 			{
 				// Set Model Rotation
-				model = rotate(model, 0.01f, glm::vec3(1, 0, 0)); // Rotate
+				model = rotate(model, 0.05f, glm::vec3(1, 0, 0)); // Rotate
+				
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+			{
+				// Set Model Rotation
+				
+				model = translate(model, glm::vec3(-0.1, 0, 0));
+
+			}
+
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+			{
+				// Set Model Rotation
+			
+				model = translate(model, glm::vec3(0.1, 0, 0));
+			}
+
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			{
+				// Set Model Rotation
+				
+				model = translate(model, glm::vec3(0, 0.1, 0));
+			}
+
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			{
+				// Set Model Rotation
+				
+				model = translate(model, glm::vec3(0, -0.1, 0));
 			}
 		}
+		
 		update();
 		render();
 	}
@@ -192,9 +212,9 @@ void Game::initialize()
 		//"	fColor = texture2D(f_texture, uv);"
 		//"	fColor = color * texture2D(f_texture, uv);"
 		//"	fColor = lightColor * texture2D(f_texture, uv);"
-		//"	fColor = color + texture2D(f_texture, uv);"
+		"	fColor = color + texture2D(f_texture, uv);"
 		//"	fColor = color - texture2D(f_texture, uv);"
-		"	fColor = color;"
+		//"	fColor = color;"
 		"}"; //Fragment Shader Src
 
 	DEBUG_MSG("Setting Up Fragment Shader");
