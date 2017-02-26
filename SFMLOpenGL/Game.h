@@ -28,12 +28,16 @@ public:
 	Game(sf::ContextSettings settings);
 	~Game();
 	void run();
+
+	
 private:
+	
 	Window window;
 	bool isRunning = false;
 	void initialize();
 	void update();
-	void render();
+	void renderCube(mat4 &modelRef);
+	void render(mat4 &modelRef);
 	void unload();
 };
 

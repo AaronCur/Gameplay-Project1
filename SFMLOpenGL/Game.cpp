@@ -30,7 +30,7 @@ int comp_count;		// Component of texture
 
 unsigned char* img_data;		// image data
 
-mat4 mvp, projection, view, model;			// Model View Projection
+mat4 mvp, projection, view, model, model2, model3;			// Model View Projection
 
 Game::Game() : 
 	window(VideoMode(800, 600), 
@@ -74,6 +74,8 @@ void Game::run()
 			{
 				// Set Model Rotation
 				model = rotate(model, -0.05f, glm::vec3(1, 0, 0)); // Rotate
+				model2 = rotate(model2, -0.05f, glm::vec3(1, 0, 0)); // Rotate
+				model3 = rotate(model3, -0.05f, glm::vec3(1, 0, 0)); // Rotate
 				
 			}
 
@@ -81,13 +83,15 @@ void Game::run()
 			{
 				// Set Model Rotation
 				model = rotate(model, 0.05f, glm::vec3(1, 0, 0)); // Rotate
-				
+				model2 = rotate(model2, 0.05f, glm::vec3(1, 0, 0)); // Rotate
+				model3 = rotate(model3, 0.05f, glm::vec3(1, 0, 0)); // Rotate
 			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
 				// Set Model Rotation
 				
 				model = translate(model, glm::vec3(-0.1, 0, 0));
+				
 
 			}
 
@@ -112,9 +116,10 @@ void Game::run()
 				model = translate(model, glm::vec3(0, -0.1, 0));
 			}
 		}
-		
+		render(model);
+		//render(model2);
 		update();
-		render();
+		
 	}
 
 #if (DEBUG >= 2)
@@ -317,6 +322,15 @@ void Game::initialize()
 	model = mat4(
 		1.0f					// Identity Matrix
 		);
+	model2 = mat4(
+		1.0f					// Identity Matrix
+	);
+	model3 = mat4(
+		1.0f					// Identity Matrix
+	);
+
+	model2 = translate(model2, vec3(5, 0, 0));
+	model3 = translate(model3, vec3(-5, 0, 0));
 
 	// Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
@@ -330,17 +344,11 @@ void Game::update()
 	DEBUG_MSG("Updating...");
 #endif
 	// Update Model View Projection
-	mvp = projection * view * model;
+	//mvp = projection * view * model;
 }
-
-void Game::render()
+void Game::renderCube(mat4 &modelRef)
 {
-
-#if (DEBUG >= 2)
-	DEBUG_MSG("Render Loop...");
-#endif
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	mvp = projection * view * modelRef;
 
 	//VBO Data....vertices, colors and UV's appended
 	glBufferSubData(GL_ARRAY_BUFFER, 0 * VERTICES * sizeof(GLfloat), 3 * VERTICES * sizeof(GLfloat), vertices);
@@ -359,7 +367,7 @@ void Game::render()
 	glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, 0, (VOID*)(3 * VERTICES * sizeof(GLfloat)));
 	glVertexAttribPointer(uvID, 2, GL_FLOAT, GL_FALSE, 0, (VOID*)(((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat)));
-	
+
 	//Enable Arrays
 	glEnableVertexAttribArray(positionID);
 	glEnableVertexAttribArray(colorID);
@@ -367,6 +375,22 @@ void Game::render()
 
 	//Draw Element Arrays
 	glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
+
+
+}
+void Game::render(mat4 &modelRef)
+{
+
+#if (DEBUG >= 2)
+	DEBUG_MSG("Render Loop...");
+#endif
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	renderCube(model);
+	renderCube(model2);
+	renderCube(model3);
+	
 	window.display();
 
 	//Disable Arrays
