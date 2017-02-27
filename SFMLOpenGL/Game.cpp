@@ -1,5 +1,6 @@
 #include <Game.h>
 #include <Cube.h>
+#include <PlayerCube.h>
 
 GLuint	vsid,		// Vertex Shader ID
 		fsid,		// Fragment Shader ID
@@ -30,7 +31,7 @@ int comp_count;		// Component of texture
 
 unsigned char* img_data;		// image data
 
-mat4 mvp, projection, view, model, model2, model3;			// Model View Projection
+mat4 mvp, projection, view, model, model2, model3, playerModel;			// Model View Projection
 
 Game::Game() : 
 	window(VideoMode(800, 600), 
@@ -60,7 +61,8 @@ void Game::run()
 
 #if (DEBUG >= 2)
 		DEBUG_MSG("Game running...");
-#endif
+#endif+
+
 
 		while (window.pollEvent(event))
 		{
@@ -117,7 +119,7 @@ void Game::run()
 			}
 		}
 		render(model);
-		//render(model2);
+		render(playerModel);
 		update();
 		
 	}
@@ -217,7 +219,7 @@ void Game::initialize()
 		//"	fColor = texture2D(f_texture, uv);"
 		//"	fColor = color * texture2D(f_texture, uv);"
 		//"	fColor = lightColor * texture2D(f_texture, uv);"
-		"	fColor = color + texture2D(f_texture, uv);"
+		"	fColor = color + texture2D(f_texture, uv );"
 		//"	fColor = color - texture2D(f_texture, uv);"
 		//"	fColor = color;"
 		"}"; //Fragment Shader Src
@@ -329,9 +331,14 @@ void Game::initialize()
 		1.0f					// Identity Matrix
 	);
 
-	model2 = translate(model2, vec3(5, 0, 0));
-	model3 = translate(model3, vec3(-5, 0, 0));
+	playerModel = mat4(
+		1.0f					// Identity Matrix
+	);
 
+	model = translate(model, vec3(0, 0, 0));
+	model2 = translate(model2, vec3(5, 0, 0));
+	model3 = translate(model3, vec3(-5, -0, 0));
+	playerModel = translate(playerModel, vec3(0, 2, 0));
 	// Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -362,6 +369,45 @@ void Game::renderCube(mat4 &modelRef)
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(textureID, 0);
 
+
+	//Set pointers for each parameter (with appropriate starting positions)
+	//https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttribPointer.xml
+	glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(colorID, 4, GL_FLOAT, GL_FALSE, 0, (VOID*)(3 * VERTICES * sizeof(GLfloat)));
+	glVertexAttribPointer(uvID, 2, GL_FLOAT, GL_FALSE, 0, (VOID*)(((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat)));
+
+	//Enable Arrays
+	glEnableVertexAttribArray(positionID);
+	glEnableVertexAttribArray(colorID);
+	glEnableVertexAttribArray(uvID);
+
+	//Draw Element Arrays
+	glDrawElements(GL_TRIANGLES, 3 * INDICES, GL_UNSIGNED_INT, NULL);
+
+	/********************************************************************************************************************/
+
+	
+
+
+}
+
+void Game::renderPlayerCube(mat4 &modelRef)
+{
+	mvp = projection * view * modelRef;
+
+	//VBO Data....vertices, colors and UV's appended
+	glBufferSubData(GL_ARRAY_BUFFER, 0 * VERTICES * sizeof(GLfloat), 3 * VERTICES * sizeof(GLfloat), vertices2);
+	glBufferSubData(GL_ARRAY_BUFFER, 3 * VERTICES * sizeof(GLfloat), 4 * COLORS * sizeof(GLfloat), colors2);
+	glBufferSubData(GL_ARRAY_BUFFER, ((3 * VERTICES) + (4 * COLORS)) * sizeof(GLfloat), 2 * UVS * sizeof(GLfloat), uvs2);
+
+	// Send transformation to shader mvp uniform
+	glUniformMatrix4fv(mvpID, 1, GL_FALSE, &mvp[0][0]);
+
+	//Set Active Texture .... 32
+	glActiveTexture(GL_TEXTURE0);
+	glUniform1i(textureID, 0);
+
+
 	//Set pointers for each parameter (with appropriate starting positions)
 	//https://www.khronos.org/opengles/sdk/docs/man/xhtml/glVertexAttribPointer.xml
 	glVertexAttribPointer(positionID, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -390,6 +436,7 @@ void Game::render(mat4 &modelRef)
 	renderCube(model);
 	renderCube(model2);
 	renderCube(model3);
+	renderPlayerCube(playerModel);
 	
 	window.display();
 
