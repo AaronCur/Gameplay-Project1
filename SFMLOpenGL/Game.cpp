@@ -351,7 +351,7 @@ void Game::update()
 	DEBUG_MSG("Updating...");
 #endif
 	// Update Model View Projection
-	//mvp = projection * view * model;
+	///mvp = projection * view * model;
 }
 void Game::renderCube(mat4 &modelRef)
 {
