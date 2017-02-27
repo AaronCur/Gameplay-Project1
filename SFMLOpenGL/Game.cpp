@@ -24,14 +24,18 @@ GLuint	vsid,		// Vertex Shader ID
 const string filename = "texture_2.tga";
 //const string filename = "uvtemplate.tga";
 
-
+bool moveLeft = false;
 int width;			// Width of texture
 int height;			// Height of texture
 int comp_count;		// Component of texture
+double z;	double z3;
+double z1; double z4;
+double z2; double z5;
+double z6;
 
 unsigned char* img_data;		// image data
 
-mat4 mvp, projection, view, model, model2, model3, playerModel;			// Model View Projection
+mat4 mvp, projection, view, model, model2, model3, model4, model5, model6, model7, playerModel;			// Model View Projection
 
 Game::Game() : 
 	window(VideoMode(800, 600), 
@@ -71,55 +75,30 @@ void Game::run()
 				isRunning = false;
 			}
 
-
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-			{
-				// Set Model Rotation
-				model = rotate(model, -0.05f, glm::vec3(1, 0, 0)); // Rotate
-				model2 = rotate(model2, -0.05f, glm::vec3(1, 0, 0)); // Rotate
-				model3 = rotate(model3, -0.05f, glm::vec3(1, 0, 0)); // Rotate
-				
-			}
-
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-			{
-				// Set Model Rotation
-				model = rotate(model, 0.05f, glm::vec3(1, 0, 0)); // Rotate
-				model2 = rotate(model2, 0.05f, glm::vec3(1, 0, 0)); // Rotate
-				model3 = rotate(model3, 0.05f, glm::vec3(1, 0, 0)); // Rotate
-			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
-				// Set Model Rotation
+			
+				playerModel = translate(playerModel, glm::vec3(-0.2, 0, 0));
 				
-				model = translate(model, glm::vec3(-0.1, 0, 0));
-				
-
 			}
+
+			
+			
+
 
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			{
 				// Set Model Rotation
 			
-				model = translate(model, glm::vec3(0.1, 0, 0));
+				playerModel = translate(playerModel, glm::vec3(0.2, 0, 0));
 			}
-
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			{
-				// Set Model Rotation
-				
-				model = translate(model, glm::vec3(0, 0.1, 0));
-			}
-
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			{
-				// Set Model Rotation
-				
-				model = translate(model, glm::vec3(0, -0.1, 0));
-			}
+		/*	int z = rand() % 5 + 1;*/
+			
 		}
+
 		render(model);
 		render(playerModel);
+		
 		update();
 		
 	}
@@ -149,6 +128,8 @@ void Game::initialize()
 
 	glGenVertexArrays(1, &vao); //Gen Vertex Array
 	glBindVertexArray(vao);
+
+	glGetDoublev(GL_MODELVIEW);
 
 	glGenBuffers(1, &vbo); //Gen Vertex Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -315,7 +296,7 @@ void Game::initialize()
 
 	// Camera Matrix
 	view = lookAt(
-		vec3(0.0f, 4.0f, 10.0f),	// Camera (x,y,z), in World Space
+		vec3(0.0f, 4.0f, 30.0f),	// Camera (x,y,z), in World Space
 		vec3(0.0f, 0.0f, 0.0f),	// Camera looking at origin
 		vec3(0.0f, 1.0f, 0.0f)	// 0.0f, 1.0f, 0.0f Look Down and 0.0f, -1.0f, 0.0f Look Up
 		);
@@ -330,15 +311,33 @@ void Game::initialize()
 	model3 = mat4(
 		1.0f					// Identity Matrix
 	);
+	model4 = mat4(
+		1.0f					// Identity Matrix
+	);
+	model5 = mat4(
+		1.0f					// Identity Matrix
+	);
+	model6 = mat4(
+		1.0f					// Identity Matrix
+	);
+	model7 = mat4(
+		1.0f					// Identity Matrix
+	);
 
 	playerModel = mat4(
 		1.0f					// Identity Matrix
 	);
-
-	model = translate(model, vec3(0, 0, 0));
-	model2 = translate(model2, vec3(5, 0, 0));
-	model3 = translate(model3, vec3(-5, -0, 0));
-	playerModel = translate(playerModel, vec3(0, 2, 0));
+	model = translate(model, vec3(-12, 0, -40));
+	model2 = translate(model2, vec3(-8, 0,-40));
+	model3 = translate(model3, vec3(-4, -0, -40));
+	model4= translate(model4, vec3(0, 0, -40));
+	model5 = translate(model5, vec3(4, 0, -40));
+	model6 = translate(model6, vec3(8, 0, -40));
+	model7 = translate(model7, vec3(12, 0, -40));
+	
+	cubeRepawn(model);
+	
+	playerModel = translate(playerModel, vec3(0, 0, 20));
 	// Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -352,7 +351,41 @@ void Game::update()
 #endif
 	// Update Model View Projection
 	///mvp = projection * view * model;
+	model = translate(model, glm::vec3(0, 0, 0.07));
+	model2 = translate(model2, glm::vec3(0, 0, 0.08));
+	model3 = translate(model3, glm::vec3(0, 0, 0.09));
+	model4 = translate(model4, glm::vec3(0, 0, 0.08));
+	model5 = translate(model5, glm::vec3(0, 0, 0.07));
+	model6 = translate(model6, glm::vec3(0, 0, 0.065));
+	model7 = translate(model7, glm::vec3(0, 0, 0.07));
+	
+	
 }
+void Game::cubeRepawn(mat4 &modelRef)
+{
+	/*srand(time(NULL));
+	z = rand() % 1 + 0.01;
+	z2 = rand() % 1 + 0.01;
+	z3 = rand() % 1 + 0.01;
+	z4 = rand() % 1 + 0.01;
+	z5 = rand() % 1 + 0.01;
+	z6 = rand() % 1 + 0.01;*/
+	z = 0.05;
+	z1 = 0.04;
+	z3 = 0.08;
+	z3 = 0.06;
+	z3 = 0.05;
+	z4 = 0.03;
+	z5 = 0.07;
+	z6 = 0.04;
+
+
+	
+		
+	
+	
+}
+
 void Game::renderCube(mat4 &modelRef)
 {
 	mvp = projection * view * modelRef;
@@ -436,6 +469,10 @@ void Game::render(mat4 &modelRef)
 	renderCube(model);
 	renderCube(model2);
 	renderCube(model3);
+	renderCube(model4);
+	renderCube(model5);
+	renderCube(model6);
+	renderCube(model7);
 	renderPlayerCube(playerModel);
 	
 	window.display();
