@@ -29,6 +29,8 @@ bool moveLeft = false;
 int width;			// Width of texture
 int height;			// Height of texture
 int comp_count;		// Component of texture
+int const maxEnemies = 9;
+double playerSpeed = 0.3;
 double z;	double z3;
 double z1; double z4;
 double z2; double z5;
@@ -43,14 +45,16 @@ double z6;
 //Vector3<double> m_position7(0, 0, 0);
 
 
-double m_positionZ[7] = { 0 };
+double m_positionZ[maxEnemies] = { 0 };
 
-double m_offset[7] = { 0 };
+double m_modelPos[maxEnemies] = { 0 };
+
+double m_offset[maxEnemies] = { 0 };
 bool respawn = false;
 
 unsigned char* img_data;		// image data
 
-mat4 mvp, projection, view, model[7], playerModel;			// Model View Projection
+mat4 mvp, projection, view, model[maxEnemies], playerModel;			// Model View Projection
 
 Game::Game() : 
 	window(VideoMode(800, 600), 
@@ -93,7 +97,7 @@ void Game::run()
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
 			
-				playerModel = translate(playerModel, glm::vec3(-0.2, 0, 0));
+				playerModel = translate(playerModel, glm::vec3(-playerSpeed, 0, 0));
 				
 			}
 
@@ -105,14 +109,17 @@ void Game::run()
 			{
 				// Set Model Rotation
 			
-				playerModel = translate(playerModel, glm::vec3(0.2, 0, 0));
+				playerModel = translate(playerModel, glm::vec3(playerSpeed, 0, 0));
 			}
 		/*	int z = rand() % 5 + 1;*/
 			
 		}
-		cubeRepawn(model[0]);
-		render(model[0]);
-		render(playerModel);
+		//cubeRepawn(model[4]);
+		
+		
+			render();
+		
+		
 
 		
 		update();
@@ -324,7 +331,7 @@ void Game::initialize()
 
 	// Camera Matrix
 	view = lookAt(
-		vec3(0.0f, 4.0f, 30.0f),	// Camera (x,y,z), in World Space
+		vec3(0.0f, 3.0f, 150.0f),	// Camera (x,y,z), in World Space
 		vec3(0.0f, 0.0f, 0.0f),	// Camera looking at origin
 		vec3(0.0f, 1.0f, 0.0f)	// 0.0f, 1.0f, 0.0f Look Down and 0.0f, -1.0f, 0.0f Look Up
 	);
@@ -351,27 +358,68 @@ void Game::initialize()
 	model[6] = mat4(
 		1.0f					// Identity Matrix
 	);
+	model[7] = mat4(
+		1.0f
+	);
+
+	model[8] = mat4(
+		1.0f
+	);
+
+
 
 	playerModel = mat4(
 		1.0f					// Identity Matrix
 	);
-	model[0] = translate(model[0], vec3(-12, 0, -50));
-	m_offset[0] = 10;
-	model[1] = translate(model[1], vec3(-8, 0, -40));
-	m_offset[1] = 0;
-	model[2] = translate(model[2], vec3(-4, -0, -45));
-	m_offset[2] = 5;
-	model[3] = translate(model[3], vec3(0, 0, -35));
-	m_offset[3] = -5;
-	model[4] = translate(model[4], vec3(4, 0, -25));
-	m_offset[4] = -15;
-	model[5] = translate(model[5], vec3(8, 0, -30));
-	m_offset[5] = -10;
-	model[6]= translate(model[6], vec3(12, 0, -40));
-	m_offset[6] = 0;
+	m_modelPos[0] = 0;
+	m_modelPos[1] = -110;
+	m_modelPos[2] = -80;
+	m_modelPos[3] = -10;
+	m_modelPos[4] = -100;
+	m_modelPos[5] = -80;
+	m_modelPos[6] = -140;
+	m_modelPos[7] = -125;
 	
 	
-	playerModel = translate(playerModel, vec3(0, 0, 20));
+
+	model[0] = translate(model[0], vec3(-9, 0, m_modelPos[0]));
+	m_offset[0] = m_modelPos[0];
+	m_positionZ[0] = m_modelPos[0];
+
+	model[1] = translate(model[1], vec3(-6, 0, m_modelPos[1]));
+	m_offset[1] = m_modelPos[1];
+	m_positionZ[1] = m_modelPos[1];
+
+	model[2] = translate(model[2], vec3(-3, 0, m_modelPos[2]));
+	m_offset[2] = m_modelPos[2];
+	m_positionZ[2] = m_modelPos[2];
+
+	model[3] = translate(model[3], vec3(0, 0, m_modelPos[3]));
+	m_offset[3] = m_modelPos[3];
+	m_positionZ[3] = m_modelPos[3];
+
+	model[4] = translate(model[4], vec3(3, 0, m_modelPos[4]));
+	m_offset[4] = m_modelPos[4];
+	m_positionZ[4] = m_modelPos[4];
+
+	model[5] = translate(model[5], vec3(6, 0, m_modelPos[5]));
+	m_offset[5] = m_modelPos[5];
+	m_positionZ[5] = m_modelPos[5];
+
+	model[6]= translate(model[6], vec3(9, 0, m_modelPos[6]));
+	m_offset[6] = m_modelPos[6];
+	m_positionZ[6] = m_modelPos[6];
+
+	model[7] = translate(model[7], vec3(-4.5, 0, m_modelPos[7]));
+	m_offset[7] = m_modelPos[7];
+	m_positionZ[7] = m_modelPos[7];
+
+	model[8] = translate(model[8], vec3(4.5, 0, m_modelPos[8]));
+	m_offset[8] = m_modelPos[8];
+	m_positionZ[8] = m_modelPos[8];
+	
+	
+	playerModel = translate(playerModel, vec3(0, 0, 140));
 	// Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -383,26 +431,33 @@ void Game::update()
 #if (DEBUG >= 2)
 	DEBUG_MSG("Updating...");
 #endif
+
+	
 	// Update Model View Projection
-	///mvp = projection * view * model;
-	for (int i = 0; i < 7; i++)
+   
+
+
+	for (int i = 0; i < maxEnemies; i++)
 	{
-		model[i] = translate(model[i], glm::vec3(0, 0, 0.07));
-		m_positionZ[i] = m_positionZ[i] + 0.07;
-
-		if (m_positionZ[i] > 77)
+		
+		if (m_positionZ[i] >= 155)
 		{
-			//m_positionZ[i] = 0;
-			model[i] = translate(model[i], glm::vec3(0, 0, -77 + m_offset[i]));
 			m_positionZ[i] = 0;
+			model[i] = translate(model[i], glm::vec3(0, 0, -155 + m_offset[i]));
+			m_positionZ[i] = m_offset[i];
 
-			if (i == 6)
-			{
-				//i = 0;
-			}
+		}
+		else
+		{
+			model[i] = translate(model[i], glm::vec3(0, 0, 0.07));
+			m_positionZ[i] = m_positionZ[i] + 0.07;
+
 		}
 	}
+
 	
+	
+
 	
 
 
@@ -444,29 +499,10 @@ void Game::update()
 	
 
 }
-void Game::cubeRepawn(mat4 &modelRef)
-{
-	/*srand(time(NULL));
-	z = rand() % 1 + 0.01;
-	z2 = rand() % 1 + 0.01;
-	z3 = rand() % 1 + 0.01;
-	z4 = rand() % 1 + 0.01;
-	z5 = rand() % 1 + 0.01;
-	z6 = rand() % 1 + 0.01;*/
-	for (int i = 0; i > 7; i++)
-	{
 
-		if (m_positionZ[i] > 65 && respawn == false)
-		{
-			respawn = true;
-			model[i] = translate(model[i], glm::vec3(0, 0, -65));
-		}
-
-	 }
-	respawn = false;
 	
 	
-}
+
 
 void Game::renderCube(mat4 &modelRef)
 {
@@ -539,7 +575,7 @@ void Game::renderPlayerCube(mat4 &modelRef)
 
 
 }
-void Game::render(mat4 &modelRef)
+void Game::render()
 {
 
 #if (DEBUG >= 2)
@@ -548,10 +584,13 @@ void Game::render(mat4 &modelRef)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < maxEnemies; i++)
 	{
 		renderCube(model[i]);
 	}
+	
+		
+	
 	/*renderCube(model);
 	renderCube(model2);
 	renderCube(model3);

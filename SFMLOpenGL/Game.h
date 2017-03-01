@@ -37,8 +37,8 @@ private:
 	void initialize();
 	void update();
 	void renderCube(mat4 &modelRef);
-	void cubeRepawn(mat4 &modelRef);
-	void render(mat4 &modelRef);
+	void cubeRepawn();
+	void render();
 	void renderPlayerCube(mat4 &modelRef);
 	void unload();
 };
