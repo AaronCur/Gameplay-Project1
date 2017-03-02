@@ -46,11 +46,13 @@ double z6;
 
 
 double m_positionZ[maxEnemies] = { 0 };
+double m_positionX[maxEnemies] = { 0 };
 
 double m_modelPos[maxEnemies] = { 0 };
 
 double m_offset[maxEnemies] = { 0 };
 bool respawn = false;
+bool collision = false;
 
 unsigned char* img_data;		// image data
 
@@ -385,38 +387,47 @@ void Game::initialize()
 	model[0] = translate(model[0], vec3(-9, 0, m_modelPos[0]));
 	m_offset[0] = m_modelPos[0];
 	m_positionZ[0] = m_modelPos[0];
+	m_positionX[0] = -9;
 
 	model[1] = translate(model[1], vec3(-6, 0, m_modelPos[1]));
 	m_offset[1] = m_modelPos[1];
 	m_positionZ[1] = m_modelPos[1];
+	m_positionX[1] = -6;
 
 	model[2] = translate(model[2], vec3(-3, 0, m_modelPos[2]));
 	m_offset[2] = m_modelPos[2];
 	m_positionZ[2] = m_modelPos[2];
+	m_positionX[2] = -3;
 
 	model[3] = translate(model[3], vec3(0, 0, m_modelPos[3]));
 	m_offset[3] = m_modelPos[3];
 	m_positionZ[3] = m_modelPos[3];
+	m_positionX[3] = 0;
 
 	model[4] = translate(model[4], vec3(3, 0, m_modelPos[4]));
 	m_offset[4] = m_modelPos[4];
 	m_positionZ[4] = m_modelPos[4];
+	m_positionX[4] = 3;
 
 	model[5] = translate(model[5], vec3(6, 0, m_modelPos[5]));
 	m_offset[5] = m_modelPos[5];
 	m_positionZ[5] = m_modelPos[5];
+	m_positionX[5] = 6;
 
 	model[6]= translate(model[6], vec3(9, 0, m_modelPos[6]));
 	m_offset[6] = m_modelPos[6];
 	m_positionZ[6] = m_modelPos[6];
+	m_positionX[6] = 9;
 
 	model[7] = translate(model[7], vec3(-4.5, 0, m_modelPos[7]));
 	m_offset[7] = m_modelPos[7];
 	m_positionZ[7] = m_modelPos[7];
+	m_positionX[7] = -4.5;
 
 	model[8] = translate(model[8], vec3(4.5, 0, m_modelPos[8]));
 	m_offset[8] = m_modelPos[8];
 	m_positionZ[8] = m_modelPos[8];
+	m_positionX[8] = 4.5;
 	
 	
 	playerModel = translate(playerModel, vec3(0, 0, 140));
@@ -439,24 +450,37 @@ void Game::update()
 
 	for (int i = 0; i < maxEnemies; i++)
 	{
-		
+		if (model[i][3].x <= playerModel[3].x + 2 && model[i][3].x >= playerModel[3].x - 2 && model[i][3].z >= playerModel[3].z - 0.2 && model[i][3].z <= playerModel[3].z + 0.2)
+		{
+			std::cout << "collision" << std::endl;
+			collision = true;
+			
+		}
+		if (collision == true)
+		{
+			
+			model[i] = translate(model[i], glm::vec3(0, 0.01, 0));
+			
+			
+		}
 		if (m_positionZ[i] >= 155)
 		{
 			m_positionZ[i] = 0;
 			model[i] = translate(model[i], glm::vec3(0, 0, -155 + m_offset[i]));
 			m_positionZ[i] = m_offset[i];
-
+			
 		}
 		else
 		{
-			model[i] = translate(model[i], glm::vec3(0, 0, 0.07));
-			m_positionZ[i] = m_positionZ[i] + 0.07;
+			model[i] = translate(model[i], glm::vec3(0, 0, 0.04));
+			m_positionZ[i] = m_positionZ[i] + 0.04;
 
 		}
 	}
 
 	
 	
+
 
 	
 
